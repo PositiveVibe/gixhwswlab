@@ -1,10 +1,10 @@
-#
-#                                                                          
-#		 )\/) _   _   o  _  _   )    )\/)     _ o  _    )\/) _   _ ( _  o  _   _  
-#		(  ( (_( (_(  ( (_ (_( (    (  ( (_( (  ( (_   (  ( (_( (_  ) ) ( ) ) )_) 
-#		           _)                        _)                              (_   
-#
-#
+#   __  __             _           _   __  __           _        __  __            _     _            
+#  |  \/  | __ _  __ _(_) ___ __ _| | |  \/  |_   _ ___(_) ___  |  \/  | __ _  ___| |__ (_)_ __   ___ 
+#  | |\/| |/ _` |/ _` | |/ __/ _` | | | |\/| | | | / __| |/ __| | |\/| |/ _` |/ __| '_ \| | '_ \ / _ \
+#  | |  | | (_| | (_| | | (_| (_| | | | |  | | |_| \__ \ | (__  | |  | | (_| | (__| | | | | | | |  __/
+#  |_|  |_|\__,_|\__, |_|\___\__,_|_| |_|  |_|\__,_|___/_|\___| |_|  |_|\__,_|\___|_| |_|_|_| |_|\___|
+#                |___/                                                                                
+# 
 #
 # Welcome to Magical Music Machine's implementation for the code of Milestone 3!
 #
@@ -102,20 +102,24 @@ else:
 # Beginning of data structures
 loop = 0
 windowSize = 6 # just for reference
+
 # List of the coords of the different people.
 # These fill up with 50 elements at a time (25 keypoints each with an x and y coordinate). 
 list1 = []
 list2 = []
 list3 = []
+
 # This array is used to find the average of the delta of their movement over the last second or so
 motion = {1:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], 2:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], 3:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
 drumHistory = {'left':[0,0],'right':[0,0]}
 ready = [0,0,0]
 state = {'mode':'begin','players':{'guitar':0,'bass':0,'drums':0}}
+
 # List of osc messages that get sent to the server.
 # The second element in the array is the number of seconds to wait before sending a similar message 
 osc = {'bang':[time.time(),1],'highkick':[time.time(),1],'bigstrumguitar':[time.time(),.2],'bigstrumbass':[time.time(),2],'crowd':[time.time(),2],'strum':[time.time(),.2],'strums':[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],4],'drums1':[time.time(),.1],'drums2':[time.time(),.1],'drums3':[time.time(),.1],'drums4':[time.time(),.1],'drums5':[time.time(),.1],'drums6':[time.time(),.1],'dab':[time.time(),3],'piano':[time.time(),.1],'cowbell':[time.time(),.2],'goats':[time.time(),3],'bow':[time.time(),1],'dog':[time.time(),1.5]}
 tempMovements = []
+
 # Body keypoints as coordinates for easier reference
 headX = 0 
 headY = 1
@@ -428,12 +432,12 @@ def checkForDSP(history,person,currentFrame,previousFrame):
         
 
 
-	 #  _____    ____             _        __        ___     _ _        _                      
-	 # |___ /   | __ )  ___  __ _(_)_ __   \ \      / / |__ (_) | ___  | |    ___   ___  _ __  
-	 #   |_ \   |  _ \ / _ \/ _` | | '_ \   \ \ /\ / /| '_ \| | |/ _ \ | |   / _ \ / _ \| '_ \ 
-	 #  ___) |  | |_) |  __/ (_| | | | | |   \ V  V / | | | | | |  __/ | |__| (_) | (_) | |_) |
-	 # |____(_) |____/ \___|\__, |_|_| |_|    \_/\_/  |_| |_|_|_|\___| |_____\___/ \___/| .__/ 
-	 #                      |___/                                                       |_|    
+ #  _____    ____             _        __        ___     _ _        _                      
+ # |___ /   | __ )  ___  __ _(_)_ __   \ \      / / |__ (_) | ___  | |    ___   ___  _ __  
+ #   |_ \   |  _ \ / _ \/ _` | | '_ \   \ \ /\ / /| '_ \| | |/ _ \ | |   / _ \ / _ \| '_ \ 
+ #  ___) |  | |_) |  __/ (_| | | | | |   \ V  V / | | | | | |  __/ | |__| (_) | (_) | |_) |
+ # |____(_) |____/ \___|\__, |_|_| |_|    \_/\_/  |_| |_|_|_|\___| |_____\___/ \___/| .__/ 
+ #                      |___/                                                       |_|    
 
 datum = op.Datum()
 while True:
@@ -443,6 +447,8 @@ while True:
     if loop ==3:
         model=tf.keras.models.load_model('model_size6_aug_2.h5')
     ret,img = stream.read()
+
+   	#If we can an image, load emblaceAndPop in OpenPose
     if (img.any()):
         #print(img)
         datum.cvInputData = img
@@ -450,6 +456,7 @@ while True:
 
     keypoints = datum.poseKeypoints # chop off the confidence levels
     #print(keypoints.shape)
+
     #If we see someone, add the keypoints to their history
     if (keypoints.shape !=()):  
         list1 = list1 + returnNormalizedKeypoints(keypoints[0])
@@ -475,6 +482,7 @@ while True:
 				checkStrums(list1,1,frame5,frame4)
 				checkForDSP(list1,1,frame6,frame5)
             list1 = list1[100:] #delete the last 2 frames
+
         #checking to see if we have enough data on person 2 to make a prediction
         if len(list2)==250:
 		    if (state['mode']=='test'):
@@ -485,6 +493,7 @@ while True:
 				checkStrums(list2,2,frame5,frame4)
 				checkForDSP(list2,2,frame6,frame5)
 	            list2 = list2[100:] #delete the last 2 frames
+
 	    #checking to see if we have enough data on person 3 to make a prediction
         if len(list3)==250:
             if (state['mode']=='test'):
